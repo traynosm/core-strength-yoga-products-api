@@ -11,8 +11,8 @@ using core_strength_yoga_products_api.Data.Contexts;
 namespace core_strength_yoga_products_api.Migrations
 {
     [DbContext(typeof(CoreStrengthYogaProductsApiDbContext))]
-    [Migration("20230512130114_AddFurtherDbContexts")]
-    partial class AddFurtherDbContexts
+    [Migration("20230516170148_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -216,21 +216,6 @@ namespace core_strength_yoga_products_api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ProductProductAttributes", b =>
-                {
-                    b.Property<int>("ProductAttributesId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ProductsId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ProductAttributesId", "ProductsId");
-
-                    b.HasIndex("ProductsId");
-
-                    b.ToTable("ProductProductAttributes");
-                });
-
             modelBuilder.Entity("core_strength_yoga_products_api.Model.Image", b =>
                 {
                     b.Property<int>("Id")
@@ -358,6 +343,9 @@ namespace core_strength_yoga_products_api.Migrations
                     b.Property<decimal>("PriceAdjustment")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Size")
                         .HasColumnType("INTEGER");
 
@@ -365,6 +353,8 @@ namespace core_strength_yoga_products_api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductAttributes");
                 });
@@ -468,21 +458,6 @@ namespace core_strength_yoga_products_api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ProductProductAttributes", b =>
-                {
-                    b.HasOne("core_strength_yoga_products_api.Models.ProductAttributes", null)
-                        .WithMany()
-                        .HasForeignKey("ProductAttributesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("core_strength_yoga_products_api.Models.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("core_strength_yoga_products_api.Models.Order", b =>
                 {
                     b.HasOne("core_strength_yoga_products_api.Models.Customer", "Customer")
@@ -529,6 +504,17 @@ namespace core_strength_yoga_products_api.Migrations
                     b.Navigation("ProductType");
                 });
 
+            modelBuilder.Entity("core_strength_yoga_products_api.Models.ProductAttributes", b =>
+                {
+                    b.HasOne("core_strength_yoga_products_api.Models.Product", "Product")
+                        .WithMany("ProductAttributes")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("core_strength_yoga_products_api.Models.ProductCategory", b =>
                 {
                     b.HasOne("core_strength_yoga_products_api.Model.Image", "Image")
@@ -549,6 +535,11 @@ namespace core_strength_yoga_products_api.Migrations
                         .IsRequired();
 
                     b.Navigation("Image");
+                });
+
+            modelBuilder.Entity("core_strength_yoga_products_api.Models.Product", b =>
+                {
+                    b.Navigation("ProductAttributes");
                 });
 #pragma warning restore 612, 618
         }

@@ -19,6 +19,13 @@ namespace core_strength_yoga_products_api.Models
             ProductCategoryName = productCategoryName;
             Description = description;
         }
-    }
-    
+
+        public ProductCategory(int id, string productCategoryName, string description, Image image)
+        {
+            Id = id;
+            ProductCategoryName = productCategoryName;
+            Description = description;
+            Image = image;
+        }
+    }  
 }

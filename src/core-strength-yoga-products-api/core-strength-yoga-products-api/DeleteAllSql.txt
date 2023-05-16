@@ -1,0 +1,5 @@
+﻿DELETE FROM [Images];
+DELETE FROM [ProductCategories];
+DELETE FROM [ProductTypes];
+DELETE FROM [ProductAttributes];
+DELETE FROM [Products];

@@ -32,6 +32,23 @@ namespace core_strength_yoga_products_api.Controllers
             return dto;
         }
 
+        [Microsoft.AspNetCore.Mvc.HttpGet()]
+        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll()
+        {
+            var products = await _context.Products.ToListAsync();
+
+            if (products == null) return NotFound();
+
+            var productDtos = new List<ProductDto>();
+
+            foreach (var product in products)
+            {
+                productDtos.Add(ProductDto.Resolve(product));
+            }
+
+            return productDtos;
+        }
+
         [Microsoft.AspNetCore.Mvc.HttpGet("ByCategory/{id}")]
         public ActionResult<IEnumerable<ProductDto>> ByProductCategory(int id)
         {
@@ -78,19 +95,19 @@ namespace core_strength_yoga_products_api.Controllers
             products = colourId > 0 ?
                 products.SelectMany(p => p.ProductAttributes)
                     .Where(p => (int)p.Colour == colourId)
-                    .SelectMany(pa => pa.Products).ToList() :
+                    .Select(pa => pa.Product).ToList() :
                 products;
 
             products = sizeId > 0 ?
                 products.SelectMany(p => p.ProductAttributes)
                     .Where(p => (int)p.Size == sizeId)
-                    .SelectMany(pa => pa.Products).ToList() :
+                    .Select(pa => pa.Product).ToList() :
                 products;
 
             products = genderId > 0 ?
                 products.SelectMany(p => p.ProductAttributes)
                     .Where(p => (int)p.Gender == genderId)
-                    .SelectMany(pa => pa.Products).ToList() :
+                    .Select(pa => pa.Product).ToList() :
                 products;
 
             var productDtos = new List<ProductDto>();
@@ -216,7 +233,7 @@ namespace core_strength_yoga_products_api.Controllers
                 }
                 else
                 {
-                    productAttributeToUpdate.Products = new List<Product> { savedProduct };
+                    productAttributeToUpdate.Product =  savedProduct ;
                     _context.ProductAttributes.Add(productAttributeToUpdate);
                 }
             }
