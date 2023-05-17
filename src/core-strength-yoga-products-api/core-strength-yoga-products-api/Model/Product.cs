@@ -26,5 +26,14 @@ namespace core_strength_yoga_products_api.Models
             Description = description;
             FullPrice = fullPrice;
         }
+        
+        public Product(int id, string name, string description, decimal fullPrice, ProductCategory productCategory) 
+        {
+            Id = id;
+            Name = name;
+            Description = description;
+            FullPrice = fullPrice;
+            ProductCategory = productCategory;
+        }
     }
 }

@@ -33,7 +33,6 @@ namespace core_strength_yoga_products_api
             {
                 var services = scope.ServiceProvider;
                 SeedData.Initialize(services);
-                SeeDataDepartments.Initialize(services);
             }
 
             // Configure the HTTP request pipeline.

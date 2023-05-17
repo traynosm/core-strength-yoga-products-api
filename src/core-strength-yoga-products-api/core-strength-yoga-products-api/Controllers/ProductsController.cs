@@ -1,3 +1,4 @@
+using System.Text.Json;
 using core_strength_yoga_products_api.Data.Contexts;
 using core_strength_yoga_products_api.Model.Dtos;
 using core_strength_yoga_products_api.Models;
@@ -48,6 +49,23 @@ namespace core_strength_yoga_products_api.Controllers
 
             return productDtos;
         }
+        
+        [Microsoft.AspNetCore.Mvc.HttpGet("Categories")]
+        public async  Task<ActionResult<IEnumerable<ProductDto>>> Categories()
+        {
+            var products = _context.Products;
+
+            if (products == null) return NotFound();
+
+            var productDtos = new List<ProductDto>();
+
+            foreach (var product in products)
+            {
+                productDtos.Add(ProductDto.Resolve(product));
+            }
+
+            return productDtos.ToList();
+        }
 
         [Microsoft.AspNetCore.Mvc.HttpGet("ByType/{id}")]
         public ActionResult<IEnumerable<ProductDto>> ByProductType(int id)
@@ -64,6 +82,23 @@ namespace core_strength_yoga_products_api.Controllers
             }
 
             return productDtos;
+        }
+        
+        [Microsoft.AspNetCore.Mvc.HttpGet("ByType")]
+        public ActionResult<IEnumerable<ProductTypeDto>> ByProductType()
+        {
+            var productTypes = _context.ProductTypes;
+
+            if (productTypes == null) return NotFound();
+
+            var productTypeDtos = new List<ProductTypeDto>();
+
+            foreach (var productType in productTypes)
+            {
+                productTypeDtos.Add(ProductTypeDto.Resolve(productType));
+            }
+
+            return productTypeDtos;
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet("FilterOnAttribute/ProductCategory={categoryId}/Colour={colourId}/Size={sizeId}/Gender={genderId}")]

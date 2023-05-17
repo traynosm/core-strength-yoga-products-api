@@ -23,7 +23,6 @@ namespace core_strength_yoga_products_api.Data.Contexts
         public DbSet<Image> Images { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
-        public DbSet<Department> Departments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
