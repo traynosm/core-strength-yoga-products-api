@@ -21,7 +21,9 @@ namespace core_strength_yoga_products_api.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductCategory>>> Get() 
         { 
-            return await _context.ProductCategories.ToListAsync();     
+            return await _context.ProductCategories
+                .Include(pc => pc.Image)
+                .ToListAsync();     
         }
     }
 }

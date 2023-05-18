@@ -13,6 +13,7 @@ namespace core_strength_yoga_products_api.Models
         public virtual Image Image { get; set; }
 
         public ProductCategory() { }    
+
         public ProductCategory(int id, string productCategoryName, string description)
         {
             Id = id;

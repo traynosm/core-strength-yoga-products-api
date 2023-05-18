@@ -25,9 +25,9 @@ namespace core_strength_yoga_products_api.Data.Contexts
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<Product>()
-             .HasMany(e => e.ProductAttributes)
-             .WithOne(e => e.Product);
+            builder.Entity<Customer>()
+                .Property(s => s.CreatedAt)
+                .HasDefaultValueSql("date('now')");
         }
     }
 }

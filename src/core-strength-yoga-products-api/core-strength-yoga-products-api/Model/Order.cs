@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using core_strength_yoga_products_api.Model;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace core_strength_yoga_products_api.Models
 {
@@ -6,20 +8,23 @@ namespace core_strength_yoga_products_api.Models
     {
         [Key]
         public int Id { get; set; }
-        public int ProductId { get; set; }
-        public virtual Product Product { get; set; }
+        public virtual IEnumerable<BasketItem> Items { get; set; }
+        [ForeignKey(nameof(Customer))]
         public int CustomerId { get; set; }
-        public virtual Customer Customer { get; set; }
         public DateTime? DateOfSale { get; set; }
         public decimal OrderTotal { get; set; }
+        public bool IsPaid { get; set; }
+        public int ShippingAddressId { get; set; }
 
-        public Order (int id, DateTime? dateOfSale, decimal orderTotal, int productId, int customerId)
+        public Order() { }
+
+        public Order (int id, DateTime? dateOfSale, decimal orderTotal, int customerId, bool isPaid)
         {
             Id = id;
             DateOfSale = dateOfSale;
             OrderTotal = orderTotal;
-            ProductId = productId;
             CustomerId = customerId;  
+            IsPaid = isPaid;    
         }
     }
 }

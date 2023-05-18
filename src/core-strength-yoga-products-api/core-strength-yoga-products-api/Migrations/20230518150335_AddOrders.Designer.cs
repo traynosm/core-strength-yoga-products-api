@@ -11,18 +11,14 @@ using core_strength_yoga_products_api.Data.Contexts;
 namespace core_strength_yoga_products_api.Migrations
 {
     [DbContext(typeof(CoreStrengthYogaProductsApiDbContext))]
-    [Migration("20230516170148_Initial")]
-    partial class Initial
+    [Migration("20230518150335_AddOrders")]
+    partial class AddOrders
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.5")
-                .HasAnnotation("Proxies:ChangeTracking", false)
-                .HasAnnotation("Proxies:CheckEquality", false)
-                .HasAnnotation("Proxies:LazyLoading", true);
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -216,6 +212,31 @@ namespace core_strength_yoga_products_api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("core_strength_yoga_products_api.Model.BasketItem", b =>
+                {
+                    b.Property<int>("OrderId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductAttributeId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("TotalCost")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("OrderId", "CustomerId", "ProductId", "ProductAttributeId");
+
+                    b.ToTable("BasketItem");
+                });
+
             modelBuilder.Entity("core_strength_yoga_products_api.Model.Image", b =>
                 {
                     b.Property<int>("Id")
@@ -239,6 +260,46 @@ namespace core_strength_yoga_products_api.Migrations
                     b.ToTable("Images");
                 });
 
+            modelBuilder.Entity("core_strength_yoga_products_api.Models.AddressDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("AddrLine2")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("County")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("CustomerDetailId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PostCode")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StreetAddr")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerDetailId");
+
+                    b.ToTable("AddressDetail");
+                });
+
             modelBuilder.Entity("core_strength_yoga_products_api.Models.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -247,7 +308,11 @@ namespace core_strength_yoga_products_api.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("TEXT")
+                        .HasDefaultValueSql("date('now')");
+
+                    b.Property<int>("CustomerDetailId")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("IdentityUserName")
                         .IsRequired()
@@ -261,7 +326,39 @@ namespace core_strength_yoga_products_api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CustomerDetailId");
+
                     b.ToTable("Customers");
+                });
+
+            modelBuilder.Entity("core_strength_yoga_products_api.Models.CustomerDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PhoneNo")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CustomerDetail");
                 });
 
             modelBuilder.Entity("core_strength_yoga_products_api.Models.Order", b =>
@@ -276,17 +373,16 @@ namespace core_strength_yoga_products_api.Migrations
                     b.Property<DateTime?>("DateOfSale")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("INTEGER");
+
                     b.Property<decimal>("OrderTotal")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int>("ShippingAddressId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("ProductId");
 
                     b.ToTable("Orders");
                 });
@@ -458,23 +554,33 @@ namespace core_strength_yoga_products_api.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("core_strength_yoga_products_api.Models.Order", b =>
+            modelBuilder.Entity("core_strength_yoga_products_api.Model.BasketItem", b =>
                 {
-                    b.HasOne("core_strength_yoga_products_api.Models.Customer", "Customer")
+                    b.HasOne("core_strength_yoga_products_api.Models.Order", null)
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("core_strength_yoga_products_api.Models.AddressDetail", b =>
+                {
+                    b.HasOne("core_strength_yoga_products_api.Models.CustomerDetail", null)
+                        .WithMany("Addresses")
+                        .HasForeignKey("CustomerDetailId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("core_strength_yoga_products_api.Models.Customer", b =>
+                {
+                    b.HasOne("core_strength_yoga_products_api.Models.CustomerDetail", "CustomerDetail")
                         .WithMany()
-                        .HasForeignKey("CustomerId")
+                        .HasForeignKey("CustomerDetailId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("core_strength_yoga_products_api.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Product");
+                    b.Navigation("CustomerDetail");
                 });
 
             modelBuilder.Entity("core_strength_yoga_products_api.Models.Product", b =>
@@ -506,13 +612,11 @@ namespace core_strength_yoga_products_api.Migrations
 
             modelBuilder.Entity("core_strength_yoga_products_api.Models.ProductAttributes", b =>
                 {
-                    b.HasOne("core_strength_yoga_products_api.Models.Product", "Product")
+                    b.HasOne("core_strength_yoga_products_api.Models.Product", null)
                         .WithMany("ProductAttributes")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("core_strength_yoga_products_api.Models.ProductCategory", b =>
@@ -535,6 +639,16 @@ namespace core_strength_yoga_products_api.Migrations
                         .IsRequired();
 
                     b.Navigation("Image");
+                });
+
+            modelBuilder.Entity("core_strength_yoga_products_api.Models.CustomerDetail", b =>
+                {
+                    b.Navigation("Addresses");
+                });
+
+            modelBuilder.Entity("core_strength_yoga_products_api.Models.Order", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("core_strength_yoga_products_api.Models.Product", b =>

@@ -3,3 +3,8 @@ DELETE FROM [ProductCategories];
 DELETE FROM [ProductTypes];
 DELETE FROM [ProductAttributes];
 DELETE FROM [Products];
+DELETE FROM [AddressDetail];
+DELETE FROM [CustomerDetail];
+DELETE FROM [Customers];
+DELETE FROM [BasketItem];
+DELETE FROM [Orders];

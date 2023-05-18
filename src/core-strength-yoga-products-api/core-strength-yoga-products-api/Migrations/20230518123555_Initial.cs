@@ -51,19 +51,20 @@ namespace core_strength_yoga_products_api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Customers",
+                name: "CustomerDetail",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    IdentityUserName = table.Column<string>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsGdpr = table.Column<bool>(type: "INTEGER", nullable: false)
+                    FirstName = table.Column<string>(type: "TEXT", nullable: false),
+                    Surname = table.Column<string>(type: "TEXT", nullable: false),
+                    PhoneNo = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    CustomerId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customers", x => x.Id);
+                    table.PrimaryKey("PK_CustomerDetail", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -183,6 +184,54 @@ namespace core_strength_yoga_products_api.Migrations
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AddressDetail",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CustomerDetailId = table.Column<int>(type: "INTEGER", nullable: false),
+                    StreetAddr = table.Column<string>(type: "TEXT", nullable: false),
+                    AddrLine2 = table.Column<string>(type: "TEXT", nullable: false),
+                    City = table.Column<string>(type: "TEXT", nullable: false),
+                    County = table.Column<string>(type: "TEXT", nullable: false),
+                    Country = table.Column<string>(type: "TEXT", nullable: false),
+                    PostCode = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AddressDetail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AddressDetail_CustomerDetail_CustomerDetailId",
+                        column: x => x.CustomerDetailId,
+                        principalTable: "CustomerDetail",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Customers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    IdentityUserName = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "date('now')"),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsGdpr = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CustomerDetailId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Customers_CustomerDetail_CustomerDetailId",
+                        column: x => x.CustomerDetailId,
+                        principalTable: "CustomerDetail",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -318,6 +367,11 @@ namespace core_strength_yoga_products_api.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AddressDetail_CustomerDetailId",
+                table: "AddressDetail",
+                column: "CustomerDetailId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
@@ -353,6 +407,11 @@ namespace core_strength_yoga_products_api.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Customers_CustomerDetailId",
+                table: "Customers",
+                column: "CustomerDetailId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Orders_CustomerId",
@@ -399,6 +458,9 @@ namespace core_strength_yoga_products_api.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AddressDetail");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -430,6 +492,9 @@ namespace core_strength_yoga_products_api.Migrations
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "CustomerDetail");
 
             migrationBuilder.DropTable(
                 name: "ProductCategories");

@@ -39,7 +39,6 @@ namespace core_strength_yoga_products_api.Models
             ProductType = productType;
             Image = image;
             ProductAttributes = productAttributes;
-
         }
     }
 }

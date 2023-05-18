@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace core_strength_yoga_products_api.Models
 {
@@ -11,8 +12,8 @@ namespace core_strength_yoga_products_api.Models
         public Enums.Colour Colour { get; set; }
         public Enums.Size Size { get; set; }
         public Enums.Gender Gender { get; set; }
+        [ForeignKey(nameof(Product))]
         public int ProductId { get; set; }
-        public virtual Product Product { get; set; }
 
         public ProductAttributes() { }  
         public ProductAttributes(int id, int stockLevel, decimal priceAdjustment, 

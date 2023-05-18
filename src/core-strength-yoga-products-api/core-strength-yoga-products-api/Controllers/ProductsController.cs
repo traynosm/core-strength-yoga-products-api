@@ -1,5 +1,5 @@
 using core_strength_yoga_products_api.Data.Contexts;
-using core_strength_yoga_products_api.Model.Dtos;
+using core_strength_yoga_products_api.Extensions;
 using core_strength_yoga_products_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,131 +21,97 @@ namespace core_strength_yoga_products_api.Controllers
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet("{id}")]
-        public async Task<ActionResult<ProductDto>> Get(int id)
+        public async Task<ActionResult<Product>> Get(int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products
+                .IncludeAllRelated()
+                .FirstOrDefaultAsync(p => p.Id == id);
 
-            if (product == null) return NotFound();
-
-            var dto = ProductDto.Resolve(product);  
+            if (product == null) return NotFound(); 
             
-            return dto;
+            return product;
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet()]
-        public async Task<ActionResult<IEnumerable<ProductDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<Product>>> GetAll()
         {
-            var products = await _context.Products.ToListAsync();
+            var products = await _context.Products
+                .IncludeAllRelated()
+                .ToListAsync();
 
             if (products == null) return NotFound();
 
-            var productDtos = new List<ProductDto>();
-
-            foreach (var product in products)
-            {
-                productDtos.Add(ProductDto.Resolve(product));
-            }
-
-            return productDtos;
+            return products;
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet("ByCategory/{id}")]
-        public ActionResult<IEnumerable<ProductDto>> ByProductCategory(int id)
+        public ActionResult<IEnumerable<Product>> ByProductCategory(int id)
         {
-            var products = _context.Products.Where(p => p.ProductCategoryId == id);
+            var products = _context.Products.SelectOnCategory(id);
 
             if (products == null) return NotFound();
 
-           var productDtos = new List<ProductDto>();
-
-            foreach (var product in products)
-            {
-                productDtos.Add(ProductDto.Resolve(product));
-            }
-
-            return productDtos;
+            return products.ToList();
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet("ByType/{id}")]
-        public ActionResult<IEnumerable<ProductDto>> ByProductType(int id)
+        public ActionResult<IEnumerable<Product>> ByProductType(int id)
         {
-            var products = _context.Products.Where(p => p.ProductTypeId == id);
+            var products = _context.Products.SelectOnType(id);
 
             if (products == null) return NotFound();
 
-            var productDtos = new List<ProductDto>();
-
-            foreach (var product in products)
-            {
-                productDtos.Add(ProductDto.Resolve(product));
-            }
-
-            return productDtos;
+            return products.ToList();
         }
 
-        [Microsoft.AspNetCore.Mvc.HttpGet("FilterOnAttribute/ProductCategory={categoryId}/Colour={colourId}/Size={sizeId}/Gender={genderId}")]
-        public ActionResult<IEnumerable<ProductDto>> FilterOnAttribute([FromUri] int categoryId = 0, int colourId = 0, int sizeId = 0, int genderId = 0)
+        [Microsoft.AspNetCore.Mvc.HttpGet(
+            "FilterOnAttribute/ProductCategory={categoryId}/Colour={colourId}/Size={sizeId}/Gender={genderId}")]
+        public ActionResult<IEnumerable<Product>> FilterOnAttribute(
+            [FromUri] int categoryId = 0, int colourId = 0, int sizeId = 0, int genderId = 0)
         {
-            var products = categoryId > 0 ? 
-                _context.Products.Where(p => p.ProductCategoryId == categoryId).ToList() :
-                _context.Products.ToList();
+            var products = _context.Products.SelectOnCategory(categoryId);
 
             if (products == null) return NotFound();
 
-            products = colourId > 0 ?
-                products.SelectMany(p => p.ProductAttributes)
-                    .Where(p => (int)p.Colour == colourId)
-                    .Select(pa => pa.Product).ToList() :
-                products;
+            products = products
+                .SelectOnColourAttribute(_context.Products, colourId)
+                .SelectOnSizeAttribute(_context.Products, sizeId)
+                .SelectOnGenderAttribute(_context.Products, genderId);
 
-            products = sizeId > 0 ?
-                products.SelectMany(p => p.ProductAttributes)
-                    .Where(p => (int)p.Size == sizeId)
-                    .Select(pa => pa.Product).ToList() :
-                products;
-
-            products = genderId > 0 ?
-                products.SelectMany(p => p.ProductAttributes)
-                    .Where(p => (int)p.Gender == genderId)
-                    .Select(pa => pa.Product).ToList() :
-                products;
-
-            var productDtos = new List<ProductDto>();
-
-            foreach (var product in products)
-            {
-                productDtos.Add(ProductDto.Resolve(product));
-            }
-
-            return productDtos;
+            return products.Any() ? products.ToList() : new List<Product>();
         }
 
         [Microsoft.AspNetCore.Mvc.HttpPut()]
-        public async Task<IActionResult> Put(ProductDto productDto)
+        public async Task<ActionResult<Product>> Put(Product productToUpdate)
         {
-            var productToUpdate = ProductDto.Resolve(productDto);
-
-            var savedProduct = _context.Products.Find(productDto.Id);
+            if(productToUpdate.Id == 0)
+            {
+                return NotFound();
+            }
+            
+            var savedProduct = _context.Products
+                .IncludeAllRelated()
+                .FirstOrDefault(p => p.Id == productToUpdate.Id);
 
             if(savedProduct != null)
             {
-                RedirectToAction("Post", new { productDto = productDto});
+                RedirectToAction("Post", new { productToUpdate });
             }
 
-            UpdateProductAttributes(productToUpdate, savedProduct); 
-            UpdateProductCategory(productToUpdate, savedProduct);
-            UpdateProductType(productToUpdate, savedProduct);   
-            UpdateImage(productToUpdate, savedProduct);
+            UpdateProductAttributes(productToUpdate, savedProduct!); 
+            UpdateProductCategory(productToUpdate, savedProduct!);
+            UpdateProductType(productToUpdate, savedProduct!);   
+            UpdateImage(productToUpdate, savedProduct!);
 
-            _context.Entry(savedProduct).CurrentValues.SetValues(productToUpdate);
+            _context.Entry(savedProduct!).CurrentValues.SetValues(productToUpdate);
 
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch (DbUpdateConcurrencyException concurrencyException)
+            catch (DbUpdateConcurrencyException)
             {
-                if (!_context.Products.Any(p => p.Id == productDto.Id))
+                if (!_context.Products.Any(p => p.Id == productToUpdate.Id))
                 {
                     return NotFound();
                 }
@@ -155,24 +121,24 @@ namespace core_strength_yoga_products_api.Controllers
                 return StatusCode(500, exception.Message);
             }
 
-            return NoContent();
+            
+            return productToUpdate;
         }
 
         [Microsoft.AspNetCore.Mvc.HttpPost]
-        public async Task<ActionResult<ProductDto>> Post(ProductDto productDto)
+        public async Task<ActionResult<Product>> Post(Product product)
         {
             if (_context.Products == null)
             {
-                return Problem("Entity set 'DbContext.Movies' is null.");
+                return Problem("Entity set 'DbContext.Products' is null.");
             }
-            var product = ProductDto.Resolve(productDto);
 
             if(_context.Products.Any(p => p.Name == product.Name))
             {
-                return Problem($"Product with name={product.Name} already exists!");
+                return Problem($"Product with name='{product.Name}' already exists!");
             }
 
-            if(product.ProductTypeId > 0)
+            if (product.ProductTypeId > 0)
             {
                 _context.ProductTypes.Attach(product.ProductType);
             }
@@ -187,7 +153,7 @@ namespace core_strength_yoga_products_api.Controllers
                 _context.Images.Attach(product.Image);
             }
 
-            foreach(var productAttribute in product.ProductAttributes)
+            foreach (var productAttribute in product.ProductAttributes)
             {
                 if(productAttribute.Id > 0)
                 {
@@ -225,7 +191,8 @@ namespace core_strength_yoga_products_api.Controllers
         {
             foreach (var productAttributeToUpdate in productToUpdate.ProductAttributes)
             {
-                var savedProductAttribute = savedProduct.ProductAttributes.SingleOrDefault(pa => pa.Id == productAttributeToUpdate.Id);
+                var savedProductAttribute = savedProduct.ProductAttributes.SingleOrDefault(
+                    pa => pa.Id == productAttributeToUpdate.Id);
 
                 if (savedProductAttribute != null)
                 {
@@ -233,7 +200,6 @@ namespace core_strength_yoga_products_api.Controllers
                 }
                 else
                 {
-                    productAttributeToUpdate.Product =  savedProduct ;
                     _context.ProductAttributes.Add(productAttributeToUpdate);
                 }
             }
