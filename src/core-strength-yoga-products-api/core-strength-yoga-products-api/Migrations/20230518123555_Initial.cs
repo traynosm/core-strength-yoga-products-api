@@ -51,23 +51,24 @@ namespace core_strength_yoga_products_api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Customers",
+                name: "CustomerDetail",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    IdentityUserName = table.Column<string>(type: "TEXT", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
-                    IsGdpr = table.Column<bool>(type: "INTEGER", nullable: false)
+                    FirstName = table.Column<string>(type: "TEXT", nullable: false),
+                    Surname = table.Column<string>(type: "TEXT", nullable: false),
+                    PhoneNo = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    CustomerId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Customers", x => x.Id);
+                    table.PrimaryKey("PK_CustomerDetail", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Image",
+                name: "Images",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -78,24 +79,7 @@ namespace core_strength_yoga_products_api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Image", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ProductAttributes",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "INTEGER", nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
-                    StockLevel = table.Column<int>(type: "INTEGER", nullable: false),
-                    PriceAdjustment = table.Column<decimal>(type: "TEXT", nullable: false),
-                    Colour = table.Column<int>(type: "INTEGER", nullable: false),
-                    Size = table.Column<int>(type: "INTEGER", nullable: false),
-                    Gender = table.Column<int>(type: "INTEGER", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProductAttributes", x => x.Id);
+                    table.PrimaryKey("PK_Images", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -205,7 +189,55 @@ namespace core_strength_yoga_products_api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductCategory",
+                name: "AddressDetail",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CustomerDetailId = table.Column<int>(type: "INTEGER", nullable: false),
+                    StreetAddr = table.Column<string>(type: "TEXT", nullable: false),
+                    AddrLine2 = table.Column<string>(type: "TEXT", nullable: false),
+                    City = table.Column<string>(type: "TEXT", nullable: false),
+                    County = table.Column<string>(type: "TEXT", nullable: false),
+                    Country = table.Column<string>(type: "TEXT", nullable: false),
+                    PostCode = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AddressDetail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AddressDetail_CustomerDetail_CustomerDetailId",
+                        column: x => x.CustomerDetailId,
+                        principalTable: "CustomerDetail",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Customers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    IdentityUserName = table.Column<string>(type: "TEXT", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false, defaultValueSql: "date('now')"),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsGdpr = table.Column<bool>(type: "INTEGER", nullable: false),
+                    CustomerDetailId = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Customers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Customers_CustomerDetail_CustomerDetailId",
+                        column: x => x.CustomerDetailId,
+                        principalTable: "CustomerDetail",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProductCategories",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -216,17 +248,17 @@ namespace core_strength_yoga_products_api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductCategory", x => x.Id);
+                    table.PrimaryKey("PK_ProductCategories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductCategory_Image_ImageId",
+                        name: "FK_ProductCategories_Images_ImageId",
                         column: x => x.ImageId,
-                        principalTable: "Image",
+                        principalTable: "Images",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductType",
+                name: "ProductTypes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -237,11 +269,11 @@ namespace core_strength_yoga_products_api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductType", x => x.Id);
+                    table.PrimaryKey("PK_ProductTypes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductType_Image_ImageId",
+                        name: "FK_ProductTypes_Images_ImageId",
                         column: x => x.ImageId,
-                        principalTable: "Image",
+                        principalTable: "Images",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -263,21 +295,21 @@ namespace core_strength_yoga_products_api.Migrations
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Products_Image_ImageId",
+                        name: "FK_Products_Images_ImageId",
                         column: x => x.ImageId,
-                        principalTable: "Image",
+                        principalTable: "Images",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Products_ProductCategory_ProductCategoryId",
+                        name: "FK_Products_ProductCategories_ProductCategoryId",
                         column: x => x.ProductCategoryId,
-                        principalTable: "ProductCategory",
+                        principalTable: "ProductCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Products_ProductType_ProductTypeId",
+                        name: "FK_Products_ProductTypes_ProductTypeId",
                         column: x => x.ProductTypeId,
-                        principalTable: "ProductType",
+                        principalTable: "ProductTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -311,28 +343,33 @@ namespace core_strength_yoga_products_api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductProductAttributes",
+                name: "ProductAttributes",
                 columns: table => new
                 {
-                    ProductAttributesId = table.Column<int>(type: "INTEGER", nullable: false),
-                    ProductsId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    StockLevel = table.Column<int>(type: "INTEGER", nullable: false),
+                    PriceAdjustment = table.Column<decimal>(type: "TEXT", nullable: false),
+                    Colour = table.Column<int>(type: "INTEGER", nullable: false),
+                    Size = table.Column<int>(type: "INTEGER", nullable: false),
+                    Gender = table.Column<int>(type: "INTEGER", nullable: false),
+                    ProductId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductProductAttributes", x => new { x.ProductAttributesId, x.ProductsId });
+                    table.PrimaryKey("PK_ProductAttributes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_ProductProductAttributes_ProductAttributes_ProductAttributesId",
-                        column: x => x.ProductAttributesId,
-                        principalTable: "ProductAttributes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProductProductAttributes_Products_ProductsId",
-                        column: x => x.ProductsId,
+                        name: "FK_ProductAttributes_Products_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AddressDetail_CustomerDetailId",
+                table: "AddressDetail",
+                column: "CustomerDetailId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -372,6 +409,11 @@ namespace core_strength_yoga_products_api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Customers_CustomerDetailId",
+                table: "Customers",
+                column: "CustomerDetailId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Orders_CustomerId",
                 table: "Orders",
                 column: "CustomerId");
@@ -382,14 +424,14 @@ namespace core_strength_yoga_products_api.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductCategory_ImageId",
-                table: "ProductCategory",
-                column: "ImageId");
+                name: "IX_ProductAttributes_ProductId",
+                table: "ProductAttributes",
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductProductAttributes_ProductsId",
-                table: "ProductProductAttributes",
-                column: "ProductsId");
+                name: "IX_ProductCategories_ImageId",
+                table: "ProductCategories",
+                column: "ImageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Products_ImageId",
@@ -407,14 +449,17 @@ namespace core_strength_yoga_products_api.Migrations
                 column: "ProductTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductType_ImageId",
-                table: "ProductType",
+                name: "IX_ProductTypes_ImageId",
+                table: "ProductTypes",
                 column: "ImageId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AddressDetail");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -434,7 +479,7 @@ namespace core_strength_yoga_products_api.Migrations
                 name: "Orders");
 
             migrationBuilder.DropTable(
-                name: "ProductProductAttributes");
+                name: "ProductAttributes");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -446,19 +491,19 @@ namespace core_strength_yoga_products_api.Migrations
                 name: "Customers");
 
             migrationBuilder.DropTable(
-                name: "ProductAttributes");
-
-            migrationBuilder.DropTable(
                 name: "Products");
 
             migrationBuilder.DropTable(
-                name: "ProductCategory");
+                name: "CustomerDetail");
 
             migrationBuilder.DropTable(
-                name: "ProductType");
+                name: "ProductCategories");
 
             migrationBuilder.DropTable(
-                name: "Image");
+                name: "ProductTypes");
+
+            migrationBuilder.DropTable(
+                name: "Images");
         }
     }
 }

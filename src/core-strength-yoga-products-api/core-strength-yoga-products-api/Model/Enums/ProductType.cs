@@ -5,6 +5,7 @@
         None,
         Mats,
         Accessories,
+        Blocks,
         Tops,
         Bottoms
     }
