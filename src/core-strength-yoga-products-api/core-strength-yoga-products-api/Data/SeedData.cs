@@ -34,6 +34,36 @@ namespace core_strength_yoga_products_api.Data
             {
                 context.Database.EnsureCreated();
 
+                if(context.Images.Any()){
+                    Console.WriteLine("The Images database contains data and cannot be seeded");
+                }else{
+                    foreach (var image in _images)
+                    {
+                        context.Images.Add(image);
+                    }
+                }
+
+                if(context.ProductCategories.Any()){
+                    Console.WriteLine("The Product Catagories database contains data and cannot be seeded");
+                }else{
+                    foreach (var category in _productCategories)
+                    {
+                        context.ProductCategories.Add(category);
+                    }
+                }
+
+                if (context.ProductTypes.Any())
+                {
+                    Console.WriteLine("The ProductTypes database contains data and cannot be seeded");
+                }
+                else
+                {
+                    foreach (var productType in _productTypes)
+                    {
+                        context.ProductTypes.Add(productType);
+                    }
+                }
+
                 if (context.Products.Any())
                 {
                     Console.WriteLine("The Products database contains data and cannot be seeded");
@@ -144,27 +174,52 @@ namespace core_strength_yoga_products_api.Data
                     id: 2,
                     imageName: "yoga-mat-2",
                     alt: "some alt",
-                    path: "~/images/banner-2.jpg"),
+                    path: "/images/banner-2.jpg"),
                 new Image(
                     id: 3,
                     imageName: "Equipment",
                     alt: "Image of Equipment",
-                    path: "TBC"),
+                    path: "/images/Equipment.jpg"),
                 new Image(
                     id: 4,
                     imageName: "yoga-mat-3",
                     alt: "some alt",
-                    path: "~/images/banner-3.jpg"),
+                    path: "/images/banner-3.jpg"),
                 new Image(
                     id: 5,
                     imageName: "Clothing",
                     alt: "Image of Clothing",
-                    path: "TBC"),
+                    path: "/images/YogaClothing.jpg"),
                 new Image(
                     id: 6,
                     imageName: "Multi color Mat",
                     alt: "Image of Multi Colour Yoga mat",
                     path: "TBC"),
+                new Image(
+                    id: 7,
+                    imageName: "Bolsters",
+                    alt: "Image of Bolsters",
+                    path: "/images/Bolsters.jpg"),
+                new Image(
+                    id: 8,
+                    imageName: "Mats",
+                    alt: "Image of Yoga Mats",
+                    path: "/images/Mats.jpg"),
+                new Image(
+                    id: 9,
+                    imageName: "Tops",
+                    alt: "Image of Yoga Tops",
+                    path: "/images/tops.jpg"),
+                new Image(
+                    id: 10,
+                    imageName: "Bottoms",
+                    alt: "Image of Yoga Bottoms",
+                    path: "/images/bottoms.png"),
+                new Image(
+                    id: 11,
+                    imageName: "Blocks",
+                    alt: "Image of Yoga Bottoms",
+                    path: "/images/Blocks.jpg"),
             };
         }
 
@@ -193,27 +248,27 @@ namespace core_strength_yoga_products_api.Data
                     id: 1,
                     productTypeName: "Mats",
                     description: "Our Selection of Mats",
-                    image: _images!.ByName("yoga-mat-1")),
+                    image: _images!.ByName("Mats")),
                 new Models.ProductType(
                     id: 2,
                     productTypeName: "Blocks",
                     description: "Our Selection of Blocks",
-                    image: _images!.ByName("yoga-mat-2")),
+                    image: _images!.ByName("Blocks")),
                 new Models.ProductType(
                     id: 3,
                     productTypeName: "Bolsters",
                     description: "Our Selection of Bolsters",
-                    image: _images!.ByName("yoga-mat-3")),
+                    image: _images!.ByName("Bolsters")),
                new Models.ProductType(
                     id: 4,
                     productTypeName: "Yoga Tops",
                     description: "Our Selection of Yoga Tops",
-                    image: _images!.ByName("yoga-mat-3")),
+                    image: _images!.ByName("Tops")),
                new Models.ProductType(
                     id: 5,
                     productTypeName: "Yoga Leggings",
                     description: "Our Selection of Yoga Leggings",
-                    image: _images!.ByName("yoga-mat-3")),
+                    image: _images!.ByName("Bottoms")),
             };
         }
 
