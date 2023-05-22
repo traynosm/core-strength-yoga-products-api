@@ -16,8 +16,8 @@ namespace core_strength_yoga_products_api.Controllers
             _logger = logger;
             _context = context;
         }
-
-        [HttpPost()]
+       
+        [HttpPost("CalculateItemTotalCost")]
         public ActionResult<BasketItem> CalculateItemTotalCost(BasketItem item)
         {
             var product = _context.Products
@@ -45,6 +45,24 @@ namespace core_strength_yoga_products_api.Controllers
             item.TotalCost = totalCost;
 
             return item;
+        }
+
+        [HttpPost("CalculateTotalBasketCost")]
+        public ActionResult<decimal> CalculateTotalBasketCost(IEnumerable<BasketItem> basketItems) 
+        {
+            decimal totalBasketCost = 0;
+            foreach (var basketItem in basketItems)
+            {
+                if (basketItem.Quantity > 0) 
+                {
+                    if (basketItem.TotalCost == 0)
+                    {
+
+                    }
+                }
+                totalBasketCost += basketItem.TotalCost;
+            }
+            return totalBasketCost;
         }
     }
 }
