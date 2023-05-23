@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using core_strength_yoga_products_api.Data.Contexts;
 
@@ -10,9 +11,11 @@ using core_strength_yoga_products_api.Data.Contexts;
 namespace core_strength_yoga_products_api.Migrations
 {
     [DbContext(typeof(CoreStrengthYogaProductsApiDbContext))]
-    partial class CoreStrengthYogaProductsApiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230523124804_orderupdate")]
+    partial class orderupdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.5");
