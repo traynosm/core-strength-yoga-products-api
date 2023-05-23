@@ -1,5 +1,7 @@
 using core_strength_yoga_products_api.Data;
 using core_strength_yoga_products_api.Data.Contexts;
+using core_strength_yoga_products_api.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace core_strength_yoga_products_api
@@ -25,6 +27,13 @@ namespace core_strength_yoga_products_api
             options
                 //.UseLazyLoadingProxies()
                 .UseSqlite(connectionString));
+            
+            // For Identity
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<CoreStrengthYogaProductsApiDbContext>()
+                .AddDefaultTokenProviders();
+
+            builder.Services.AddSingleton<SecurityService>();
 
             var app = builder.Build();
 
