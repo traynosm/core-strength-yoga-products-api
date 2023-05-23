@@ -34,6 +34,18 @@ namespace core_strength_yoga_products_api.Data
             {
                 context.Database.EnsureCreated();
 
+                context.Database.ExecuteSqlRaw
+                    ("DELETE FROM [Images];" +
+                    "DELETE FROM [ProductCategories];" +
+                    "DELETE FROM [ProductTypes];" +
+                    "DELETE FROM [ProductAttributes];" +
+                    "DELETE FROM [Products];" +
+                    "DELETE FROM [AddressDetail];" +
+                    "DELETE FROM [CustomerDetail];" +
+                    "DELETE FROM [Customers];" +
+                    "DELETE FROM [BasketItem];" +
+                    "DELETE FROM [Orders];");
+
                 if (context.Products.Any())
                 {
                     Console.WriteLine("The Products database contains data and cannot be seeded");
@@ -804,7 +816,7 @@ namespace core_strength_yoga_products_api.Data
                 {
                     Id = 1,
                     CreatedAt = DateTime.Now,
-                    IdentityUserName = "my_username",
+                    IdentityUserName = "some_email@email.com",
                     IsActive = true,
                     IsGdpr = true,
                     CustomerDetail = _customerDetails.ById(1)
