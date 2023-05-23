@@ -1,4 +1,5 @@
 ﻿using core_strength_yoga_products_api.Data.Contexts;
+using core_strength_yoga_products_api.Migrations;
 using core_strength_yoga_products_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,14 +18,17 @@ namespace core_strength_yoga_products_api.Controllers
             _context = context;
         }
 
-        [HttpGet("{id}")]  
+        [HttpGet("{id}")]
         public async Task<ActionResult<Order>> Get(int id)
         {
             var order = await _context.Orders
                 .Include(p => p.Items)
+                .Include(p => p.Customer)
+                .Include(p => p.Customer.CustomerDetail)
+                .Include(p => p.Customer.CustomerDetail.Addresses)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
-            if(order == null)
+            if (order == null)
             {
                 return NotFound();
             }
@@ -34,50 +38,29 @@ namespace core_strength_yoga_products_api.Controllers
 
 
         //POST A NEW ORDER
-        //[Microsoft.AspNetCore.Mvc.HttpPost]
-        //public async Task<ActionResult<Order>> Post(Order order)
-        //{
-        //    if (_context.Orders == null)
-        //    {
-        //        return Problem("Entity set 'DbContext.Orders' is null.");
-        //    }
 
-        //    if (_context.Orders.Any(p => p.Name == product.Name))
-        //    {
-        //        return Problem($"Product with name='{product.Name}' already exists!");
-        //    }
+        [Microsoft.AspNetCore.Mvc.HttpPost]
+        public async Task<ActionResult<Order>> Post(Order order)
+        {
+            if (_context.Orders == null)
+            {
+                return Problem("Entity set 'DbContext.Orders' is null.");
+            }
+            if (order.CustomerId > 0)
+            {
+                _context.Customers.Attach(order.Customer);
+            }
+            order.IsPaid = false;
 
-        //    if (product.ProductTypeId > 0)
-        //    {
-        //        _context.ProductTypes.Attach(product.ProductType);
-        //    }
+            var firstAddress = order.Customer.CustomerDetail.Addresses.First();
+            order.ShippingAddressId = firstAddress.Id;
 
-        //    if (product.ProductCategoryId > 0)
-        //    {
-        //        _context.ProductCategories.Attach(product.ProductCategory);
-        //    }
+            _context.Orders.Add(order);
 
-        //    if (product.ImageId > 0)
-        //    {
-        //        _context.Images.Attach(product.Image);
-        //    }
+            await _context.SaveChangesAsync();
 
-        //    foreach (var productAttribute in product.ProductAttributes)
-        //    {
-        //        if (productAttribute.Id > 0)
-        //        {
-        //            _context.ProductAttributes.Attach(productAttribute);
-        //        }
-        //    }
-
-        //    _context.Products.Add(product);
-
-        //    await _context.SaveChangesAsync();
-
-        //    return RedirectToAction($"Get", new { product.Id });
-        //}
-
+            return order;     
+        }
         //UPDATE AN EXISTING ORDER
-
     }
 }

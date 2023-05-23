@@ -11,6 +11,7 @@ namespace core_strength_yoga_products_api.Models
         public virtual IEnumerable<BasketItem> Items { get; set; }
         [ForeignKey(nameof(Customer))]
         public int CustomerId { get; set; }
+        public virtual Customer Customer { get; set; }
         public DateTime? DateOfSale { get; set; }
         public decimal OrderTotal { get; set; }
         public bool IsPaid { get; set; }

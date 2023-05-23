@@ -870,7 +870,7 @@ namespace core_strength_yoga_products_api.Data
                     CustomerId = 1,
                     ShippingAddressId = 1,
                     DateOfSale = DateTime.Now,
-                    IsPaid = true,
+                    IsPaid = false,
                     OrderTotal = 35.50m,
                     Items = new List<BasketItem>
                     {
