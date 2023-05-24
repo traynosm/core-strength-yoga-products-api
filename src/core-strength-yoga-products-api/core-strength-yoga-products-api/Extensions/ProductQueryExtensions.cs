@@ -36,7 +36,19 @@ namespace core_strength_yoga_products_api.Extensions
                 set.IncludeAllRelated()
                 .ToList();
         }
+        public static List<Product> SelectOnType(this List<Product> products, DbSet<Product> set, int id)
+        {
+            var ids = products
+                 .Where(p => p.ProductTypeId == id)
+                 .Select(p => p.Id)
+                 .ToList();
 
+            return id > 0 && products.Any() ? set
+             .IncludeAllRelated()
+             .Where(p => ids.Contains(p.Id))
+                 .ToList() :
+             products;
+        }
         public static List<Product> SelectOnColourAttribute(this List<Product> products, DbSet<Product> set, int id) 
         {
             var ids = products
