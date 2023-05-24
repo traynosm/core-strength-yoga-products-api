@@ -1,6 +1,6 @@
 using core_strength_yoga_products_api.Data;
 using core_strength_yoga_products_api.Data.Contexts;
-using core_strength_yoga_products_api.Services;
+//using core_strength_yoga_products_api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,7 +33,7 @@ namespace core_strength_yoga_products_api
                 .AddEntityFrameworkStores<CoreStrengthYogaProductsApiDbContext>()
                 .AddDefaultTokenProviders();
 
-            builder.Services.AddSingleton<SecurityService>();
+            //builder.Services.AddSingleton<SecurityService>();
 
             var app = builder.Build();
 
