@@ -65,15 +65,17 @@ namespace core_strength_yoga_products_api.Controllers
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet(
-            "FilterOnAttribute/ProductCategory={categoryId}/Colour={colourId}/Size={sizeId}/Gender={genderId}")]
+            "FilterOnAttribute/ProductCategory={categoryId}/ProductType={productTypeId}/Colour={colourId}/Size={sizeId}/Gender={genderId}")]
         public ActionResult<IEnumerable<Product>> FilterOnAttribute(
-            [FromUri] int categoryId = 0, int colourId = 0, int sizeId = 0, int genderId = 0)
+            [FromUri] int categoryId = 0, int productTypeId = 0, int colourId = 0, int sizeId = 0, int genderId = 0)
         {
             var products = _context.Products.SelectOnCategory(categoryId);
+
 
             if (products == null) return NotFound();
 
             products = products
+                .SelectOnType(_context.Products, productTypeId)
                 .SelectOnColourAttribute(_context.Products, colourId)
                 .SelectOnSizeAttribute(_context.Products, sizeId)
                 .SelectOnGenderAttribute(_context.Products, genderId);
