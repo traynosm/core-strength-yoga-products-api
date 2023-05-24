@@ -1,4 +1,3 @@
-
 using core_strength_yoga_products_api.Data;
 using core_strength_yoga_products_api.Data.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +23,7 @@ namespace core_strength_yoga_products_api
 
             builder.Services.AddDbContext<CoreStrengthYogaProductsApiDbContext>(options =>
             options
-                .UseLazyLoadingProxies()
+                //.UseLazyLoadingProxies()
                 .UseSqlite(connectionString));
 
             var app = builder.Build();
@@ -32,6 +31,8 @@ namespace core_strength_yoga_products_api
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
+                var context = services.GetRequiredService<CoreStrengthYogaProductsApiDbContext>();
+                context.Database.EnsureCreated();
                 SeedData.Initialize(services);
             }
 
@@ -40,14 +41,6 @@ namespace core_strength_yoga_products_api
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
-            }
-
-            using (var scope = app.Services.CreateScope())
-            {
-                var services = scope.ServiceProvider;
-
-                var context = services.GetRequiredService<CoreStrengthYogaProductsApiDbContext>();
-                context.Database.EnsureCreated();
             }
 
             app.UseHttpsRedirection();

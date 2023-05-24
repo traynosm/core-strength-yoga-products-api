@@ -5,7 +5,10 @@
         None,
         Mats,
         Accessories,
+        Blocks,
         Tops,
-        Bottoms
+        Bottoms, 
+        Footwear,
+        Bolsters
     }
 }

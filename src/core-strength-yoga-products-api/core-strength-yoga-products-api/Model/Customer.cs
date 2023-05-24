@@ -8,13 +8,18 @@ namespace core_strength_yoga_products_api.Models
     {
         [Key]
         public int Id { get; set; }
+        [Required]
         public string IdentityUserName { get; set; }
 
-        [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public DateTime CreatedAt { get; set; }
         public bool IsActive { get; set; }
         public bool IsGdpr { get; set; }
+
+        public int CustomerDetailId { get; set; }
+        public virtual CustomerDetail CustomerDetail { get; set; }
+
+        public Customer() { }
 
         public Customer(int id, string identityUserName, DateTime createdAt, bool isActive, bool isGdpr)
         {
