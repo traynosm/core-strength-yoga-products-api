@@ -83,6 +83,21 @@ namespace core_strength_yoga_products_api.Controllers
             return products.Any() ? products.ToList() : new List<Product>();
         }
 
+        [Microsoft.AspNetCore.Mvc.HttpGet("Search/{query}")]
+        public ActionResult<IEnumerable<Product>> Search([FromUri] string query)
+        {
+            var products = _context.Products
+                .IncludeAllRelated()
+                .Where(p => 
+                    p.Name.ToLower().Contains(query) ||
+                    p.ProductCategory.ProductCategoryName.ToLower().Contains(query.ToLower()) ||
+                    p.ProductType.ProductTypeName.ToLower().Contains(query.ToLower()));
+
+            if (products == null) return NotFound();
+
+            return products.Any() ? products.ToList() : new List<Product>();
+        }
+
         [Microsoft.AspNetCore.Mvc.HttpPut()]
         public async Task<ActionResult<Product>> Put(Product productToUpdate)
         {
