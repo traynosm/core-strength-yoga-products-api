@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace core_strength_yoga_products_api.Controllers
 {
-    [Microsoft.AspNetCore.Mvc.Route("[controller]")]
+    [Microsoft.AspNetCore.Mvc.Route("api/v1/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace core_strength_yoga_products_api.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class BasketItemController : ControllerBase
     {
