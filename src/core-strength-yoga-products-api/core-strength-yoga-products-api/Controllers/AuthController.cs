@@ -9,11 +9,12 @@ using core_strength_yoga_products_api.Models;
 using core_strength_yoga_products_api.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace core_strength_yoga_products_api.Controllers
 {
-    [Route("auth")]
+    [Microsoft.AspNetCore.Mvc.Route("[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -34,56 +35,11 @@ namespace core_strength_yoga_products_api.Controllers
             _roleManager = roleManager;
             _configuration = configuration;
         }
-
-       /* [HttpPost]
-        public IActionResult Login(LoginDTO model)
-        {
-            
-            if (model == null)
-            {
-                return BadRequest("Invalid client Request");
-            }
-            
-
-            var encodedPassword = _securityService.EncodePasswordToBase64(model.Password);
-            var login = _context.Logins.FirstOrDefaultAsync(p => p.Username == model.Username && p.Password == encodedPassword);            
-            
-
-            if (login.Result != null)
-            {
-
-                var Claims = new Claim[]
-                {
-                    new Claim(JwtRegisteredClaimNames.Sub, login.Result.Id.ToString())
-                };
-                var secretKey = new
-                    SymmetricSecurityKey(Encoding.UTF8.GetBytes("superSecretKey@1234567891011121314151617181920"));
-                var signinCredentials = new SigningCredentials(secretKey,
-                    SecurityAlgorithms.HmacSha256);
-                var tokenOptions = new JwtSecurityToken(
-                    issuer: "CSYP",
-                    audience: "https://localhost:5001",
-                    claims: Claims,
-                    expires: DateTime.Now.AddMinutes(5),
-                    signingCredentials: signinCredentials
-                );
-                var tokenString = new
-                    JwtSecurityTokenHandler().WriteToken(tokenOptions);
-                return Ok(new { Token = tokenString });
-
-
-            }
-            else
-            {
-                return Unauthorized();
-            }
-
-        }*/
+        
        
-       
-       [HttpPost]
-        [Route("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO model)
+       [Microsoft.AspNetCore.Mvc.HttpPost]
+        [Microsoft.AspNetCore.Mvc.Route("login")]
+        public async Task<IActionResult> Login([Microsoft.AspNetCore.Mvc.FromBody] LoginDTO model)
         {
             var user = await _userManager.FindByEmailAsync(model.Username);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
@@ -93,11 +49,8 @@ namespace core_strength_yoga_products_api.Controllers
 
                 var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim(ClaimTypes.Name, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.UserData, userJson),
-
                 };
 
                 foreach (var userRole in userRoles)
@@ -110,15 +63,15 @@ namespace core_strength_yoga_products_api.Controllers
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo
+                    //expiration = token.ValidTo
                 });
             }
             return Unauthorized();
         }
 
-        [HttpPost]
-        [Route("register")]
-        public async Task<IActionResult> Register([FromBody] CustomerDTO model)
+        [Microsoft.AspNetCore.Mvc.HttpPost]
+        [Microsoft.AspNetCore.Mvc.Route("register")]
+        public async Task<IActionResult> Register([Microsoft.AspNetCore.Mvc.FromBody] CustomerDTO model)
         {
             var userExists = await _userManager.FindByEmailAsync(model.CustomerDetail.Email);
             if (userExists != null)
@@ -166,10 +119,8 @@ namespace core_strength_yoga_products_api.Controllers
 
                 var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.UserName),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim(ClaimTypes.Name, user.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.UserData, userJson),
                 };
 
                 foreach (var userRole in userRoles)
@@ -189,9 +140,9 @@ namespace core_strength_yoga_products_api.Controllers
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
-        [HttpPost]
-        [Route("register-admin")]
-        public async Task<IActionResult> RegisterAdmin([FromBody] CustomerDTO model)
+        [Microsoft.AspNetCore.Mvc.HttpPost]
+        [Microsoft.AspNetCore.Mvc.Route("register-admin")]
+        public async Task<IActionResult> RegisterAdmin([Microsoft.AspNetCore.Mvc.FromBody] CustomerDTO model)
         {
             var userExists = await _userManager.FindByEmailAsync(model.CustomerDetail.Email);
             if (userExists != null)
@@ -226,17 +177,31 @@ namespace core_strength_yoga_products_api.Controllers
         private JwtSecurityToken GetToken(List<Claim> authClaims)
         {
             var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+            var credentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256);
+
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["JWT:ValidIssuer"],
                 audience: _configuration["JWT:ValidAudience"],
                 expires: DateTime.Now.AddHours(3),
                 claims: authClaims,
-                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                signingCredentials: credentials
                 );
 
             return token;
         }
+
+
+        [Authorize, Microsoft.AspNetCore.Mvc.HttpGet, Microsoft.AspNetCore.Mvc.Route("dummy")]
+        public async Task<IActionResult> Dummy()
+        {
+            
+            return Ok(new ResponseDTO() { Status = "Success", Message = "User created successfully!" });
+        }
+    }
+    
        
     }
-}
+    
+    
+    
