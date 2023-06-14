@@ -204,7 +204,7 @@ namespace core_strength_yoga_products_api.Data
                     }),
                 new Product(
                     id: 5,
-                    name: "Womens Yoge halter top",
+                    name: "Womens Yoga halter top",
                     description: "Move with ease on your yoga practice with this bright,confortable top. 1OO% Cotton.",
                     fullPrice: 10m,
                     productCategory: _productCategories.ByName(Models.Enums.ProductCategory.Clothing),
@@ -605,6 +605,114 @@ namespace core_strength_yoga_products_api.Data
                             size: Size.XL,
                             gender: Gender.Mens),
                     }),
+                new Product(
+                    id: 20,
+                    name: "Yoga Wheel",
+                    description: "The Yoga Wheel is used to improve flexibility and strength in the back, chest, shoulders, abdomen and hip flexor.",
+                    fullPrice: 20m,
+                    productCategory: _productCategories.ByName(Models.Enums.ProductCategory.Equipment),
+                    productType: _productTypes.ByName(Models.Enums.ProductType.Accessories),
+                    image: _images.ByName("yoga-wheel"),
+                    productAttributes: new List<ProductAttributes>()
+                    {
+                        new ProductAttributes(
+                            id: 42,
+                            stockLevel: 15,
+                            priceAdjustment: 0m,
+                            colour: Colour.Black,
+                            size: Size.M,
+                            gender: Gender.Unisex),      
+                    }),
+                new Product(
+                    id: 21,
+                    name: "1kg dumbells",
+                    description: "1kg dumbells for light resistance training.",
+                    fullPrice: 10m,
+                    productCategory: _productCategories.ByName(Models.Enums.ProductCategory.Equipment),
+                    productType: _productTypes.ByName(Models.Enums.ProductType.Accessories),
+                    image: _images.ByName("1kg-dumbells"),
+                    productAttributes: new List<ProductAttributes>()
+                    {
+                        new ProductAttributes(
+                            id: 43,
+                            stockLevel: 20,
+                            priceAdjustment: 0m,
+                            colour: Colour.Yellow,
+                            size: Size.M,
+                            gender: Gender.Unisex),      
+                    }),
+                new Product(
+                    id: 22,
+                    name: "Eye Pillow",
+                    description: "Helps to aid relaxation, meditation and mindfulness.",
+                    fullPrice: 15m,
+                    productCategory: _productCategories.ByName(Models.Enums.ProductCategory.Equipment),
+                    productType: _productTypes.ByName(Models.Enums.ProductType.Accessories),
+                    image: _images.ByName("eye-pillow"),
+                    productAttributes: new List<ProductAttributes>()
+                    {
+                        new ProductAttributes(
+                            id: 44,
+                            stockLevel: 30,
+                            priceAdjustment: 0m,
+                            colour: Colour.Blue,
+                            size: Size.M,
+                            gender: Gender.Unisex),                             
+                    }),
+                new Product(
+                    id: 23,
+                    name: "Yoga Sports Bra",
+                    description: "Technical fabric that keeps you dry",
+                    fullPrice: 15m,
+                    productCategory: _productCategories.ByName(Models.Enums.ProductCategory.Clothing),
+                    productType: _productTypes.ByName(Models.Enums.ProductType.Tops),
+                    image: _images.ByName("yoga-sportsbra"),
+                    productAttributes: new List<ProductAttributes>()
+                    {
+                        new ProductAttributes(
+                            id: 45,
+                            stockLevel: 10,
+                            priceAdjustment: 0m,
+                            colour: Colour.Black,
+                            size: Size.M,
+                            gender: Gender.Womens),                             
+                    }),
+                new Product(
+                    id: 24,
+                    name: "Essential Oil Yoga Mat Spray",
+                    description: "A 100 ml spray you can slip in your bag to bring some nature to your practice.",
+                    fullPrice: 5m,
+                    productCategory: _productCategories.ByName(Models.Enums.ProductCategory.Equipment),
+                    productType: _productTypes.ByName(Models.Enums.ProductType.Accessories),
+                    image: _images.ByName("yoga-mat-spray"),
+                    productAttributes: new List<ProductAttributes>()
+                    {
+                        new ProductAttributes(
+                            id: 46,
+                            stockLevel: 30,
+                            priceAdjustment: 0m,
+                            colour: Colour.Blue,
+                            size: Size.M,
+                            gender: Gender.Unisex),                             
+                    }),
+                new Product(
+                    id: 25,
+                    name: "Yoga knee & wrist pad",
+                    description: "This pad is for support and comfort for sensitive knees and wrists when practising yoga.",
+                    fullPrice: 5m,
+                    productCategory: _productCategories.ByName(Models.Enums.ProductCategory.Equipment),
+                    productType: _productTypes.ByName(Models.Enums.ProductType.Accessories),
+                    image: _images.ByName("yoga-knee-wrist-pad"),
+                    productAttributes: new List<ProductAttributes>()
+                    {
+                        new ProductAttributes(
+                            id: 47,
+                            stockLevel: 20,
+                            priceAdjustment: 0m,
+                            colour: Colour.Green,
+                            size: Size.M,
+                            gender: Gender.Unisex),                             
+                    }),
             };
         }
 
@@ -762,8 +870,36 @@ namespace core_strength_yoga_products_api.Data
                     imageName: "bolster-2",
                     alt: "Image of Yoga Bolster",
                     path: "/images/bolster-2.jpg"),
-
-
+                new Image(
+                    id: 31,
+                    imageName: "yoga-wheel",
+                    alt: "Image of Yoga Wheel",
+                    path: "/images/yoga-wheel.jpg"),
+                new Image(
+                    id: 32,
+                    imageName: "1kg-dumbells",
+                    alt: "Image of 1kg dumbells",
+                    path: "/images/1kg-dumbells.jpg"),
+                new Image(
+                    id: 33,
+                    imageName: "eye-pillow",
+                    alt: "Image of eye pillow",
+                    path: "/images/eye-pillow.jpg"),
+                new Image(
+                    id: 34,
+                    imageName: "yoga-sportsbra",
+                    alt: "Image of Yoga Sports Bra",
+                    path: "/images/yoga-sportsbra.jpg"),
+                new Image(
+                    id: 35,
+                    imageName: "yoga-mat-spray",
+                    alt: "Image of Yoga Mat Spray",
+                    path: "/images/yoga-mat-spray.jpg"),
+                new Image(
+                    id: 36,
+                    imageName: "yoga-knee-wrist-pad",
+                    alt: "Image of Yoga knee and wirst pad",
+                    path: "/images/yoga-knee-wrist-pad.jpg"),
             };
         }
 
