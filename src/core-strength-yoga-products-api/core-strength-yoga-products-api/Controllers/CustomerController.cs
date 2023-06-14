@@ -1,13 +1,14 @@
 ﻿using core_strength_yoga_products_api.Data.Contexts;
 using core_strength_yoga_products_api.Extensions;
 using core_strength_yoga_products_api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace core_strength_yoga_products_api.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/v1/[controller]")]
     public class CustomerController : ControllerBase
     {
         private readonly ILogger<CustomerController> _logger;
@@ -19,7 +20,7 @@ namespace core_strength_yoga_products_api.Controllers
             _context = context;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}"), Authorize]
         public async Task<ActionResult<Customer>> Get(int id)
         {
             var customer = await _context.Customers

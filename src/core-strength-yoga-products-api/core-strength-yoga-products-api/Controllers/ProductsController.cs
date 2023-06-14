@@ -8,7 +8,7 @@ using System.Web.Http;
 namespace core_strength_yoga_products_api.Controllers
 {
     [ApiController]
-    [Microsoft.AspNetCore.Mvc.Route("[controller]")]
+    [Microsoft.AspNetCore.Mvc.Route("api/v1/[controller]")]
     public class ProductsController : ControllerBase
     {
         private readonly ILogger<ProductsController> _logger;
@@ -65,18 +65,35 @@ namespace core_strength_yoga_products_api.Controllers
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet(
-            "FilterOnAttribute/ProductCategory={categoryId}/Colour={colourId}/Size={sizeId}/Gender={genderId}")]
+            "FilterOnAttribute/ProductCategory={categoryId}/ProductType={productTypeId}/Colour={colourId}/Size={sizeId}/Gender={genderId}")]
         public ActionResult<IEnumerable<Product>> FilterOnAttribute(
-            [FromUri] int categoryId = 0, int colourId = 0, int sizeId = 0, int genderId = 0)
+            [FromUri] int categoryId = 0, int productTypeId = 0, int colourId = 0, int sizeId = 0, int genderId = 0)
         {
             var products = _context.Products.SelectOnCategory(categoryId);
+
 
             if (products == null) return NotFound();
 
             products = products
+                .SelectOnType(_context.Products, productTypeId)
                 .SelectOnColourAttribute(_context.Products, colourId)
                 .SelectOnSizeAttribute(_context.Products, sizeId)
                 .SelectOnGenderAttribute(_context.Products, genderId);
+
+            return products.Any() ? products.ToList() : new List<Product>();
+        }
+
+        [Microsoft.AspNetCore.Mvc.HttpGet("Search/{query}")]
+        public ActionResult<IEnumerable<Product>> Search([FromUri] string query)
+        {
+            var products = _context.Products
+                .IncludeAllRelated()
+                .Where(p => 
+                    p.Name.ToLower().Contains(query) ||
+                    p.ProductCategory.ProductCategoryName.ToLower().Contains(query.ToLower()) ||
+                    p.ProductType.ProductTypeName.ToLower().Contains(query.ToLower()));
+
+            if (products == null) return NotFound();
 
             return products.Any() ? products.ToList() : new List<Product>();
         }
