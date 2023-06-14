@@ -2,6 +2,7 @@
 using core_strength_yoga_products_api.Extensions;
 using core_strength_yoga_products_api.Migrations;
 using core_strength_yoga_products_api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -20,6 +21,7 @@ namespace core_strength_yoga_products_api.Controllers
             _context = context;
         }
 
+        [Authorize]
         [HttpGet("GetByUsername/{username}")]
         public ActionResult<IEnumerable<Order>> GetByUsername(String username)
         {

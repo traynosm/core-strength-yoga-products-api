@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Web.Http;
 using core_strength_yoga_products_api.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace core_strength_yoga_products_api.Controllers
 {
@@ -143,6 +144,7 @@ namespace core_strength_yoga_products_api.Controllers
             return productToUpdate;
         }
 
+        [Microsoft.AspNetCore.Authorization.Authorize]
         [Microsoft.AspNetCore.Mvc.HttpPost]
         public async Task<ActionResult<Product>> Post(Product product)
         {
@@ -193,6 +195,7 @@ namespace core_strength_yoga_products_api.Controllers
             return RedirectToAction($"Get", new { product.Id });
         }
 
+        [Microsoft.AspNetCore.Authorization.Authorize]
         [Microsoft.AspNetCore.Mvc.HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
