@@ -4,6 +4,7 @@ using core_strength_yoga_products_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Web.Http;
+using core_strength_yoga_products_api.Model;
 
 namespace core_strength_yoga_products_api.Controllers
 {
@@ -168,6 +169,13 @@ namespace core_strength_yoga_products_api.Controllers
             if (product.ImageId > 0)
             {
                 _context.Images.Attach(product.Image);
+            }
+            else
+            {
+                Image image = new Image();
+                image.ImageName = product.Image.ImageName;
+                image.Alt = product.Image.Alt;
+                image.Path = product.Image.Path;
             }
 
             foreach (var productAttribute in product.ProductAttributes)

@@ -2,6 +2,7 @@
 using core_strength_yoga_products_api.Model;
 using core_strength_yoga_products_api.Models;
 using core_strength_yoga_products_api.Models.Enums;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace core_strength_yoga_products_api.Data
@@ -13,9 +14,13 @@ namespace core_strength_yoga_products_api.Data
         private static IEnumerable<Models.ProductType> _productTypes;
         private static IEnumerable<Product> _products;
         private static IEnumerable<Customer> _customers;
+        private static IEnumerable<IdentityUser> _users;
         private static IEnumerable<CustomerDetail> _customerDetails;
         private static IEnumerable<AddressDetail> _addressDetails;
         private static IEnumerable<Order> _orders;
+        private static RoleManager<IdentityRole> _roleManager;
+        private static UserManager<IdentityUser> _userManager;
+
 
         public static void Initialize(IServiceProvider serviceProvider)
         {
@@ -26,8 +31,12 @@ namespace core_strength_yoga_products_api.Data
             _addressDetails = SeedAddressDetails();
             _customerDetails = SeedCustomerDetails();
             _customers = SeedCustomers();
+            _users = SeedUsers();
             _orders = SeedOrders();
-
+            _userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            _roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            SeedRoles();
+            
             using (var context = new CoreStrengthYogaProductsApiDbContext(
                 serviceProvider.GetRequiredService<
                 DbContextOptions<CoreStrengthYogaProductsApiDbContext>>()))
@@ -44,6 +53,7 @@ namespace core_strength_yoga_products_api.Data
                     "DELETE FROM [CustomerDetail];" +
                     "DELETE FROM [Customers];" +
                     "DELETE FROM [BasketItem];" +
+                    "DELETE FROM [AspNetUsers];" +
                     "DELETE FROM [Orders];");
 
                 if (context.Products.Any())
@@ -68,6 +78,15 @@ namespace core_strength_yoga_products_api.Data
                     {
                         context.Customers.Add(customer);
                     }
+                }
+
+                if (context.Users.Any())
+                {
+                    Console.WriteLine("Identity Users already present");
+                }
+                else
+                {
+                    CreateUsers();
                 }
 
                 if(context.Orders.Any())
@@ -816,12 +835,85 @@ namespace core_strength_yoga_products_api.Data
                 {
                     Id = 1,
                     CreatedAt = DateTime.Now,
-                    IdentityUserName = "some_email@email.com",
+                    IdentityUserName = "user",
                     IsActive = true,
                     IsGdpr = true,
                     CustomerDetail = _customerDetails.ById(1)
                 }
             };
+        }
+        
+        private static IEnumerable<IdentityUser> SeedUsers()
+        {
+            
+            var passwordHasher = new PasswordHasher<object>();
+            var hashedPassword = passwordHasher.HashPassword(null, "Testing123!");
+            
+            return new List<IdentityUser>
+            {
+                
+                new IdentityUser()
+                {
+                    Email = "admin@email.com",
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    UserName = "admin",
+                    PasswordHash = hashedPassword
+                },
+                new IdentityUser()
+                {
+                    Email = "user@email.com",
+                    SecurityStamp = Guid.NewGuid().ToString(),
+                    UserName = "user",
+                    PasswordHash = hashedPassword
+                }
+            };
+        }
+        
+        public static async Task SeedRoles()
+        {
+            // Create the "Admin" role if it doesn't exist
+            if (!await _roleManager.RoleExistsAsync("Admin"))
+            {
+                var adminRole = new IdentityRole("Admin");
+                await _roleManager.CreateAsync(adminRole);
+            }
+
+            // Create the "User" role if it doesn't exist
+            if (!await _roleManager.RoleExistsAsync("User"))
+            {
+                var userRole = new IdentityRole("User");
+                await _roleManager.CreateAsync(userRole);
+            }
+        }
+        
+        
+        public static async Task CreateUsers()
+        {
+            foreach (var user in _users)
+            {
+                var result  = await _userManager.CreateAsync(user, "Testing123!");
+
+                if (result.Succeeded)
+                {
+                    // User created successfully
+
+                    if (user.UserName == "admin")
+                    {
+                        await _userManager.AddToRolesAsync(user, new[] { "User", "Admin" });
+                    }
+                    else
+                    {
+                        await _userManager.AddToRolesAsync(user, new[] { "User" });  
+                    }
+                    
+                    // Add roles to the user
+                }
+                else
+                {
+                    // Failed to create the user
+                    // Handle the error or log it
+                }
+            }
         }
 
         private static IEnumerable<CustomerDetail> SeedCustomerDetails()
@@ -831,13 +923,25 @@ namespace core_strength_yoga_products_api.Data
                 new CustomerDetail
                 {
                     Id = 1,
-                    Email = "some_email@email.com",
+                    Email = "user@email.com",
                     FirstName = "John",
                     Surname = "Doe",
                     PhoneNo = "1234567890",
                     Addresses = new List<AddressDetail>
                     {
                         _addressDetails.ById(1)
+                    }
+                },
+                new CustomerDetail
+                {
+                    Id = 2,
+                    Email = "admin@email.com",
+                    FirstName = "Admin",
+                    Surname = "User",
+                    PhoneNo = "1234567890",
+                    Addresses = new List<AddressDetail>
+                    {
+                        _addressDetails.ById(2)
                     }
                 }
             };
@@ -852,6 +956,16 @@ namespace core_strength_yoga_products_api.Data
                     Id = 1,
                     StreetAddr = "10 Some Street",
                     City = "Some City",
+                    AddrLine2 = "",
+                    County = "Dublin",
+                    Country = "Ireland",
+                    PostCode = "DA13 44F",
+                },
+                new AddressDetail
+                {
+                    Id = 2,
+                    StreetAddr = "12 Some Street",
+                    City = "Other city",
                     AddrLine2 = "",
                     County = "Dublin",
                     Country = "Ireland",
