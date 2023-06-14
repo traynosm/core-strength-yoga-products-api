@@ -4,6 +4,8 @@ using core_strength_yoga_products_api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Web.Http;
+using core_strength_yoga_products_api.Model;
+using Microsoft.AspNetCore.Authorization;
 
 namespace core_strength_yoga_products_api.Controllers
 {
@@ -142,6 +144,7 @@ namespace core_strength_yoga_products_api.Controllers
             return productToUpdate;
         }
 
+        [Microsoft.AspNetCore.Authorization.Authorize]
         [Microsoft.AspNetCore.Mvc.HttpPost]
         public async Task<ActionResult<Product>> Post(Product product)
         {
@@ -169,6 +172,13 @@ namespace core_strength_yoga_products_api.Controllers
             {
                 _context.Images.Attach(product.Image);
             }
+            else
+            {
+                Image image = new Image();
+                image.ImageName = product.Image.ImageName;
+                image.Alt = product.Image.Alt;
+                image.Path = product.Image.Path;
+            }
 
             foreach (var productAttribute in product.ProductAttributes)
             {
@@ -185,6 +195,7 @@ namespace core_strength_yoga_products_api.Controllers
             return RedirectToAction($"Get", new { product.Id });
         }
 
+        [Microsoft.AspNetCore.Authorization.Authorize]
         [Microsoft.AspNetCore.Mvc.HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
