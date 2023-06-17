@@ -23,3 +23,5 @@ Ensure core-strength-yoga-products-api is running prior to running this solution
 To see the filter working:
 Select Bolster. Select colour: Purple
 This should leave you with only the luxury bolster to select
+
+Two users will be created through the API for login. "admin@email.com" and "user@email.com" both will have the same password "Testing123!" (Without quotes.)
