@@ -62,5 +62,25 @@ namespace core_strength_yoga_products_api.Controllers
             return order;     
         }
         //UPDATE AN EXISTING ORDER
+
+        //////
+        [HttpGet("{id}")]
+        public IActionResult GetOrder(int id)
+        {
+
+            var order = _context.GetOrderById(id);
+            
+            if (order == null)
+            {
+                return NotFound(); 
+            }
+            
+            return Ok(order); 
+        }
+
+
+        
+
+        
     }
 }

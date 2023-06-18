@@ -30,5 +30,10 @@ namespace core_strength_yoga_products_api.Data.Contexts
                 .Property(s => s.CreatedAt)
                 .HasDefaultValueSql("date('now')");
         }
+
+        internal object GetOrderById(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
